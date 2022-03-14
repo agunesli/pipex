@@ -16,6 +16,8 @@ int main(int argc, char **argv, char **env)
 		return (0);
 	}*/
 	////////////////////////////////////////
+	// execve in child process ////////////
+	// ////////////////////////////////////
 	int	err;
 	err = execve(/*  */);
 	if (err == -1)
@@ -39,21 +41,45 @@ int main(int argc, char **argv, char **env)
 		printf("Error with fork\n");
 		return (0);
 	}
+	/////////////////////////////////////////
+//	wait(NULL);
+	if (id1 == 0)
+	{
+		dup2(fd[1], fdin);
+		close(fd[1]);
+		close(fd[0]);
+		execve(/*cm1*/);
+//		write 
+//		close(fdin);
+	}
+
 	id2 = fork();
 	if (id2 == -1)
 	{
 		printf("Error with fork\n");
 		return (0);
 	}
-	/////////////////////////////////////////
-	wait(NULL);
 	if (id1 == 0)
 	{
-		execve
+		dup2(fd[0], fdout);
+		close(fd[1]);
+		close(fd[0]);
+		execve(/*cmd2*/);
+//		write 
+// 		close(fdout);
 	}
+	close(fd[1]);
+	close(fd[0]);
+	waitpid(id1, NULL, 0);
+	waitpid(id2, NULL, 0);
+
+
 	else
 	{
+		close(fd[1]);
 		wait(NULL);
+		read
+		close(fd[0]);
 
 	}
 
