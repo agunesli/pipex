@@ -3,6 +3,7 @@
 
 //fork() => child process = 0 else main process
 //pipe() => fd[0] = read, fd[1] = write
+//execve => v = array, e = env (Error = -1)
 int main(int argc, char **argv, char **env)
 {
 	(void)argc;
@@ -14,7 +15,15 @@ int main(int argc, char **argv, char **env)
 		printf("nb d'arg no correct\n");
 		return (0);
 	}*/
-
+	////////////////////////////////////////
+	int	err;
+	err = execve(/*  */);
+	if (err == -1)
+	{
+		printf("Error with execve\n");
+		return (0);
+	}
+	////////////////////////////////////////
 	int	id1;
 	int	id2;
 	int	fd[2];
