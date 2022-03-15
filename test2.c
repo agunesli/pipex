@@ -1,17 +1,12 @@
 #include <stdio.h>
 #include "pipex.h"
 
-int main(int ac, char **ag, char **env)
+char	**found_path(char **env)
 {
-	(void)ac;
-	(void)ag;
-	int 	i = 0;
+	int 	i;
 	char	*path;
-	char	**bin;
 	char	*tmp;
 
-
-	path = NULL;
 	while (env[i] != NULL)
 	{
 		if (env[i][0] == 'P' && env[i][1] == 'A' && env[i][2] == 'T' 
@@ -27,6 +22,21 @@ int main(int ac, char **ag, char **env)
 	path = ft_substr(tmp, 5, ft_strlen(tmp) - 5);
 	free(tmp);
 	bin = ft_split(path, ':');
+	return (bin);
+
+}
+
+int main(int ac, char **ag, char **env)
+{
+	(void)ac;
+	(void)ag;
+	int 	i = 0;
+	char	*path;
+	char	**bin;
+	char	*tmp;
+
+
+	path = NULL;
 /*	i = 0;
 	while (bin[i] != NULL)
 	{

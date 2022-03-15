@@ -13,7 +13,7 @@ int *swap_fd(int fd[2], char *file_in, char *file_out)
 		printf("Error open file in\n");
 		return (NULL);
 	}
-	fdout = open(file_out, O_RDONLY);
+	fdout = open(file_out, O_RDWR | O_TRUNC);
 	if (fdout == -1)
 	{
 		printf("Error open file out\n");
