@@ -50,6 +50,7 @@ char	*correct_path(char *cmd, char **env)
 	char	*tmp;
 	int		i;
 	int		len;
+	char	*cmdd;
 
 	i = 0;
 	cmd_ag = ft_split(cmd, ' ');
@@ -57,14 +58,17 @@ char	*correct_path(char *cmd, char **env)
 	if (bin == NULL)
 		return (NULL);
 	len = len_bin(bin);
-	tmp = ft_strjoin(bin[0], cmd_ag[0]);
+	cmdd = ft_strjoin("/", cmd_ag[0]);
+	tmp = ft_strjoin(bin[0], cmdd);
 	while (++i < len && access(tmp, F_OK) != 0)
 	{
 		free(tmp);
-		tmp = ft_strjoin(bin[i], cmd_ag[0]);
+		tmp = ft_strjoin(bin[i], cmdd);
 	}
+	free(cmdd); 
 	free_all(bin);
 	free_all(cmd_ag);
+	printf("%s\n",tmp);
 	if (i == len)
 	{
 		ft_putstr("Command no found\n");

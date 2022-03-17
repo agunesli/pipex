@@ -34,7 +34,7 @@ int open_file(char *file, int i)
 	}
 	else if (i == 2)
 	{
-		fd = open(file, O_CREAT | O_RDWR | O_TRUNC);
+		fd = open(file, O_CREAT | O_RDWR | O_TRUNC, 511);
 		if (fd == -1)
 		{
 			ft_putstr("Error open file out\n");
