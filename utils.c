@@ -1,8 +1,8 @@
 #include "pipex.h"
 
-void	free_all(char   **bin)
+void	free_all(char **bin)
 {
-	int i;
+	int	i;
 
 	i = 0;
 	while (bin[i])
@@ -13,33 +13,28 @@ void	free_all(char   **bin)
 	free(bin);
 }
 
-void	ft_putstr(char *str)
+void	merror(char *str)
 {
-	write(1, str, ft_strlen(str));
+	write(2, str, ft_strlen(str));
+	exit(EXIT_FAILURE);
 }
 
-int open_file(char *file, int i)
+int	open_file(char *file, int i)
 {
-	int fd;
+	int	fd;
 
 	if (i == 1)
 	{
 		fd = open(file, O_RDONLY);
 		if (fd == -1)
-		{
-			ft_putstr("Error open file in\n");
-			return (-1);
-		}
+			merror("Error open file in\n");
 		return (fd);
 	}
 	else if (i == 2)
 	{
 		fd = open(file, O_CREAT | O_RDWR | O_TRUNC, 511);
 		if (fd == -1)
-		{
-			ft_putstr("Error open file out\n");
-			return (-1);
-		}
+			merror("Error open file out\n");
 		return (fd);
 	}
 	return (-1);

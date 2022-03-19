@@ -21,10 +21,7 @@ char	**found_path(char **env)
 		i++;
 	}
 	if (path == NULL)
-	{
-		ft_putstr("error with env\n");
-		return (NULL);
-	}
+		merror("error with env\n");
 	tmp = path;
 	path = ft_substr(tmp, 5, ft_strlen(tmp) - 5);
 	free(tmp);
@@ -43,9 +40,21 @@ int	len_bin(char **bin)
 	return (i);
 }
 
-char	*correct_path(char *cmd, char **env)
+char	*found_cmd(char *cmd)
 {
 	char	**cmd_ag;
+	char	*cmdd;
+
+	cmd_ag = ft_split(cmd, ' ');
+	cmdd = ft_strjoin("/", cmd_ag[0]);
+	free_all(cmd_ag);
+	if (cmdd == NULL)
+		merror("Error with split\n");
+	return (cmdd);
+}
+
+char	*correct_path(char *cmd, char **env)
+{
 	char	**bin;
 	char	*tmp;
 	int		i;
@@ -53,25 +62,20 @@ char	*correct_path(char *cmd, char **env)
 	char	*cmdd;
 
 	i = 0;
-	cmd_ag = ft_split(cmd, ' ');
 	bin = found_path(env);
-	if (bin == NULL)
-		return (NULL);
 	len = len_bin(bin);
-	cmdd = ft_strjoin("/", cmd_ag[0]);
+	cmdd = found_cmd(cmd);
 	tmp = ft_strjoin(bin[0], cmdd);
 	while (++i < len && access(tmp, F_OK) != 0)
 	{
 		free(tmp);
 		tmp = ft_strjoin(bin[i], cmdd);
 	}
-	free(cmdd); 
+	free(cmdd);
 	free_all(bin);
-	free_all(cmd_ag);
-	printf("%s\n",tmp);
 	if (i == len)
 	{
-		ft_putstr("Command no found\n");
+		merror("Command no found\n");
 		return (NULL);
 	}
 	else

@@ -14,7 +14,7 @@ char	**ft_split(char const *s, char c);
 char	*ft_substr(char const *s, unsigned int start, size_t len);
 char	*ft_strjoin(char const *s1, char const *s2);
 void	free_all(char **bin);
-void	ft_putstr(char *str);
+void	merror(char *str);
 int		open_file(char *file, int i);
 char	*correct_path(char *cmd, char **env);
 
