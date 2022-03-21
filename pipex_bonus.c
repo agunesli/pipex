@@ -81,6 +81,19 @@ int	**create_pipes(int nb_process)
 	return (pipes);
 }
 
+void	error_exec(char **cmd_arg, char *path, int **pipes, int *childs)
+{
+	free_all(cmd_arg);
+	free(path);
+	free(childs);
+	if (close(pipes[i][0]) == -1)
+		merror("Error with close\n");
+	if (close(pipes[i + 1][1]) == -1)
+		merror("Error with close\n");
+	free_all(pipes);
+	merror("Error with execve\n");
+}
+
 int	*create_childs(int **pipes, int nb_process, char **argv, char **env)
 {
 	int		*childs;
@@ -89,7 +102,7 @@ int	*create_childs(int **pipes, int nb_process, char **argv, char **env)
 	char	**cmd_arg;
 	char	*path;
 
-	childs = (int *)malloc(sizeof(int) * nb_process);
+	childs =‘ (int *)malloc(sizeof(int) * nb_process);
 	if (!childs)
 		merror("Error with malloc childs\n");
 	i = 0;
@@ -103,22 +116,12 @@ int	*create_childs(int **pipes, int nb_process, char **argv, char **env)
 			close_pipes(pipes, nb_process, i);
 			ft_dup2(pipes, i, nb_process, argv);
 			cmd_arg = ft_split(argv[i + 2], ' ');
-			if (cmd_arg == NULL)
-				merror("Error with split\n");
 			path = correct_path(argv[i + 2], env);
 			if (execve(path, cmd_arg, env) == -1)
-			{
-				free_all(cmd_arg);
-				if (close(pipes[i][0]) == -1)
-					merror("Error with close\n");
-				if (close(pipes[i + 1][1]) == -1)
-					merror("Error with close\n");
-				merror("Error with execve\n");
-			}
+				error_exec(cmd_arg, path, pipes, childs);
 		}
 		i++;
 	}
-	return (childs);
 }
 
 //fork() => child process = 0 else main process
@@ -144,6 +147,8 @@ int	main(int argc, char **argv, char **env)
 		close(pipes[i][1]);
 		i++;
 	}
+	free_all(pipes);
+	free(childs);
 	i = 0;
 	while (i < argc - 3)
 	{

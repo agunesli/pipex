@@ -12,7 +12,7 @@
 
 #include "pipex.h"
 
-void	free_all(char **bin)
+void	free_all(void **bin)
 {
 	int	i;
 

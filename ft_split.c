@@ -28,7 +28,7 @@ static char	**ft_big_malloc(char const *s, char c)
 	}
 	dst = (char **)malloc(sizeof(char *) * (cpt + 2));
 	if (!dst)
-		return (NULL);
+		merror("Error malloc in split\n");
 	return (dst);
 }
 
@@ -40,6 +40,7 @@ static char	**ft_free_all(char **d, size_t j)
 		j--;
 	}
 	free(d);
+	merror("Error with split\n");
 	return (NULL);
 }
 
@@ -87,7 +88,7 @@ char	**ft_split(char const *s, char c)
 		return (NULL);
 	dst = ft_big_malloc(s, c);
 	if (!dst)
-		return (NULL);
+		merror("Error malloc in split\n");
 	dst = ft_subsplit(s, dst, c);
 	return (dst);
 }
