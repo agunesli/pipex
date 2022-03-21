@@ -34,7 +34,7 @@ static char	**ft_big_malloc(char const *s, char c)
 
 static char	**ft_free_all(char **d, size_t j)
 {
-	while (j > -1)
+	while ((int)j > -1)
 	{
 		free(d[j]);
 		j--;

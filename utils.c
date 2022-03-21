@@ -12,7 +12,20 @@
 
 #include "pipex.h"
 
-void	free_all(void **bin)
+void	free_all(char **bin)
+{
+	int	i;
+
+	i = 0;
+	while (bin[i])
+	{
+		free(bin[i]);
+		i++;
+	}
+	free(bin);
+}
+
+void	free_all_int(int **bin)
 {
 	int	i;
 
