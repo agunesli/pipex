@@ -12,7 +12,7 @@
 
 #include "pipex.h"
 
-void	close_pipes(int **pipes, int nb_process, int i)
+void	close_fds(int **fds, int nb_process, int i)
 {
 	int	j;
 
@@ -21,18 +21,19 @@ void	close_pipes(int **pipes, int nb_process, int i)
 	{
 		if (j != i)
 		{
-			if (close(pipes[j][0]) == -1)
+			if (close(fds[j][0]) == -1)
 				merror("Error with close\n");
 		}
 		if (j != i + 1)
 		{
-			if (close(pipes[j][1]) == -1)
+			if (close(fds[j][1]) == -1)
 				merror("Error with close\n");
 		}
+		j++;
 	}
 }
 
-void	ft_dup2(int **pipes, int i, int nb_process, char **argv)
+void	ft_dup2(int **fds, int i, int nb_process, char **argv)
 {
 	int	fd;
 
@@ -44,45 +45,45 @@ void	ft_dup2(int **pipes, int i, int nb_process, char **argv)
 	}
 	else
 	{
-		if (dup2(pipes[i][0], STDIN_FILENO) == -1)
+		if (dup2(fds[i][0], STDIN_FILENO) == -1)
 			merror("Error with dup2\n");
 	}
 	if (i == nb_process - 1)
 	{
-		fd = open_file(argv[nb_process], 2);
+		fd = open_file(argv[nb_process + 2], 2);
 		if (dup2(fd, STDOUT_FILENO) == -1)
 			merror("Error with dup2\n");
 	}
 	else
 	{
-		if (dup2(pipes[i + 1][1], STDOUT_FILENO) == -1)
+		if (dup2(fds[i + 1][1], STDOUT_FILENO) == -1)
 			merror("Error with dup2\n");
 	}
 }
 
-int	**create_pipes(int nb_process)
+int	**create_fds(int nb_process)
 {
 	int	i;
-	int	**pipes;
+	int	**fds;
 
-	pipes = (int **)malloc(sizeof(int *) * nb_process);
-	if (!pipes)
-		merror("Error with malloc pipes\n");
+	fds = (int **)malloc(sizeof(int *) * nb_process);
+	if (!fds)
+		merror("Error with malloc fds\n");
 	i = 0;
 	while (i < nb_process)
 	{
-		pipes[i] = (int *)malloc(sizeof(int) * 2);
-		if (!pipes[i])
-			merror("Error with malloc pipes[i]\n");
-		if (pipe(pipes[i]) == -1)
+		fds[i] = (int *)malloc(sizeof(int) * 2);
+		if (!fds[i])
+			merror("Error with malloc fds[i]\n");
+		if (pipe(fds[i]) == -1)
 			merror("Error with pipe\n");
 		i++;
 	}
-	pipes[i] = NULL;
-	return (pipes);
+	fds[i] = NULL;
+	return (fds);
 }
 
-int	*create_childs(int **pipes, int nb_process, char **argv, char **env)
+int	*create_childs(int **fds, int nb_process, char **argv, char **env)
 {
 	int		*childs;
 	int		i;
@@ -100,8 +101,8 @@ int	*create_childs(int **pipes, int nb_process, char **argv, char **env)
 			merror("Error with fork child\n");
 		if (childs[i] == 0)
 		{
-			close_pipes(pipes, nb_process, i);
-			ft_dup2(pipes, i, nb_process, argv);
+			close_fds(fds, nb_process, i);
+			ft_dup2(fds, i, nb_process, argv);
 			cmd_arg = ft_split(argv[i + 2], ' ');
 			path = correct_path(argv[i + 2], env);
 			if (execve(path, cmd_arg, env) == -1)
@@ -109,11 +110,11 @@ int	*create_childs(int **pipes, int nb_process, char **argv, char **env)
 				free_all(cmd_arg);
 				free(path);
 				free(childs);
-				if (close(pipes[i][0]) == -1)
+				if (close(fds[i][0]) == -1)
 					merror("Error with close\n");
-				if (close(pipes[i + 1][1]) == -1)
+				if (close(fds[i + 1][1]) == -1)
 					merror("Error with close\n");
-				free_all_int(pipes);
+				free_all_int(fds);
 				merror("Error with execve\n");
 			}
 		}
@@ -122,18 +123,18 @@ int	*create_childs(int **pipes, int nb_process, char **argv, char **env)
 	return (childs);
 }
 
-void	create_parent(int **pipes, int *childs, int nb_process)
+void	create_parent(int **fds, int *childs, int nb_process)
 {
 	int	i;
 
 	i = 0;
 	while (i < nb_process)
 	{
-		close(pipes[i][0]);
-		close(pipes[i][1]);
+		close(fds[i][0]);
+		close(fds[i][1]);
 		i++;
 	}
-	free_all_int(pipes);
+	free_all_int(fds);
 	free(childs);
 	i = 0;
 	while (i < nb_process)
@@ -149,7 +150,7 @@ void	create_parent(int **pipes, int *childs, int nb_process)
 //nb_process => argc - 3 car fdint, fdout, pipex
 int	main(int argc, char **argv, char **env)
 {
-	int	**pipes;
+	int	**fds;
 	int	*childs;
 	int	i;
 	int	nb_process;
@@ -158,8 +159,8 @@ int	main(int argc, char **argv, char **env)
 		merror("nb d'arg no correct\n");
 	i = 0;
 	nb_process = argc -3;
-	pipes = create_pipes(nb_process);
-	childs = create_childs(pipes, nb_process, argv, env);
-	create_parent(pipes, childs, nb_process);
+	fds = create_fds(nb_process);
+	childs = create_childs(fds, nb_process, argv, env);
+	create_parent(fds, childs, nb_process);
 	return (0);
 }

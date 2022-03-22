@@ -14,6 +14,7 @@ OBJ_B	= $(SRC_B:%.c=%.o)
 
 NAME	=	pipex
 CC		=	gcc
+#FLAGS	=	-g3 -Wall -Wextra -Werror -fsanitize=address
 FLAGS	=	-Wall -Wextra -Werror
 RM		=	rm -rf
 
