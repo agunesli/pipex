@@ -6,7 +6,7 @@
 /*   By: agunesli <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/20 16:07:27 by agunesli          #+#    #+#             */
-/*   Updated: 2022/03/21 11:24:09 by agunesli         ###   ########.fr       */
+/*   Updated: 2022/03/22 15:06:58 by agunesli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,8 +85,8 @@ int	main(int argc, char **argv, char **env)
 		ft_child1(fd, fdin, argv[2], env);
 	if (child2 == 0)
 		ft_child2(fd, fdout, argv[3], env);
-	close(fd[1]);
-	close(fd[0]);
+	if(close(fd[1]) == -1 || close(fd[0]) == -1)
+		merror("Error with close\n");
 	waitpid(child1, NULL, 0);
 	waitpid(child2, NULL, 0);
 	return (0);
