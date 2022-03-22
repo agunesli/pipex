@@ -17,6 +17,7 @@
 # include <sys/types.h>
 # include <sys/stat.h>
 # include <fcntl.h>
+# include <sys/wait.h>
 
 // utiles
 char	*ft_strdup(const char *src);
@@ -28,5 +29,6 @@ void	free_all(char **bin);
 void	merror(char *str);
 int		open_file(char *file, int i);
 char	*correct_path(char *cmd, char **env);
+void	free_all_int(int **bin);
 
 #endif

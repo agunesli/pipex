@@ -25,6 +25,19 @@ void	free_all(char **bin)
 	free(bin);
 }
 
+void	free_all_int(int **bin)
+{
+	int	i;
+
+	i = 0;
+	while (bin[i])
+	{
+		free(bin[i]);
+		i++;
+	}
+	free(bin);
+}
+
 void	merror(char *str)
 {
 	write(2, str, ft_strlen(str));

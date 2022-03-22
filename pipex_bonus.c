@@ -16,6 +16,7 @@ void	close_pipes(int **pipes, int nb_process, int i)
 {
 	int	j;
 
+	j = 0;
 	while (j < nb_process)
 	{
 		if (j != i)
@@ -38,7 +39,7 @@ void	ft_dup2(int **pipes, int i, int nb_process, char **argv)
 	if (i == 0)
 	{
 		fd = open_file(argv[1], 1);
-		if (dup2(fdin, STDIN_FILENO) == -1)
+		if (dup2(fd, STDIN_FILENO) == -1)
 			merror("Error with dup2\n");
 	}
 	else
@@ -81,10 +82,22 @@ int	**create_pipes(int nb_process)
 	return (pipes);
 }
 
+void	error_exec(char **cmd_arg, char *path, int i, int **pipes, int *childs)
+{
+	free_all(cmd_arg);
+	free(path);
+	free(childs);
+	if (close(pipes[i][0]) == -1)
+		merror("Error with close\n");
+	if (close(pipes[i + 1][1]) == -1)
+		merror("Error with close\n");
+	free_all_int(pipes);
+	merror("Error with execve\n");
+}
+
 int	*create_childs(int **pipes, int nb_process, char **argv, char **env)
 {
 	int		*childs;
-	int		fdin_out[2];
 	int		i;
 	char	**cmd_arg;
 	char	*path;
@@ -103,18 +116,9 @@ int	*create_childs(int **pipes, int nb_process, char **argv, char **env)
 			close_pipes(pipes, nb_process, i);
 			ft_dup2(pipes, i, nb_process, argv);
 			cmd_arg = ft_split(argv[i + 2], ' ');
-			if (cmd_arg == NULL)
-				merror("Error with split\n");
 			path = correct_path(argv[i + 2], env);
 			if (execve(path, cmd_arg, env) == -1)
-			{
-				free_all(cmd_arg);
-				if (close(pipes[i][0]) == -1)
-					merror("Error with close\n");
-				if (close(pipes[i + 1][1]) == -1)
-					merror("Error with close\n");
-				merror("Error with execve\n");
-			}
+				error_exec(cmd_arg, path, i, pipes, childs);
 		}
 		i++;
 	}
@@ -137,13 +141,15 @@ int	main(int argc, char **argv, char **env)
 	nb_process = argc -3;
 	pipes = create_pipes(nb_process);
 	i = 0;
-	i = 0;
+	childs = create_childs(pipes, nb_process, argv, env);
 	while (i < argc - 3)
 	{
 		close(pipes[i][0]);
 		close(pipes[i][1]);
 		i++;
 	}
+	free_all_int(pipes);
+	free(childs);
 	i = 0;
 	while (i < argc - 3)
 	{
