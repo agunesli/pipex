@@ -155,6 +155,11 @@ int	main(int argc, char **argv, char **env)
 	int	i;
 	int	nb_process;
 
+	if (!ft_strncmp("here_doc", argv[1], 8))
+	{
+		if (argc != 6)
+			merror("nb d'arg no correct with here_doc\n");
+	}
 	if (argc < 5)
 		merror("nb d'arg no correct\n");
 	i = 0;

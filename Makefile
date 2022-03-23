@@ -1,4 +1,4 @@
-SRC_F	= ft_strdup.c ft_strlen.c ft_split.c ft_strjoin.c ft_substr.c path.c utils.c
+SRC_F	= ft_strdup.c ft_strlen.c ft_split.c ft_strjoin.c ft_substr.c ft_strncmp.c path.c utils.c
 
 SRC_M	= pipex.c
 

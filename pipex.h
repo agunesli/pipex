@@ -30,5 +30,5 @@ void	merror(char *str);
 int		open_file(char *file, int i);
 char	*correct_path(char *cmd, char **env);
 void	free_all_int(int **bin);
-
+int		ft_strncmp(const char *s1, const char *s2, size_t n);
 #endif

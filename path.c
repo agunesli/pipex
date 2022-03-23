@@ -11,7 +11,7 @@
 /* ************************************************************************** */
 
 #include "pipex.h"
-
+#include <stdio.h>
 char	**found_path(char **env)
 {
 	int		i;
@@ -23,8 +23,7 @@ char	**found_path(char **env)
 	path = NULL;
 	while (env[i] != NULL)
 	{
-		if (env[i][0] == 'P' && env[i][1] == 'A' && env[i][2] == 'T'
-				&& env[i][3] == 'H' && env[i][4] == '=' && env[i][5] == '/')
+		if (!ft_strncmp("PATH=/", env[i], 6))
 		{
 			path = ft_strdup(env[i]);
 			break ;
