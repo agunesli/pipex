@@ -36,12 +36,23 @@ void	close_fds(int **fds, int nb_process, int i)
 void	ft_dup2(int **fds, int i, int nb_process, char **argv)
 {
 	int	fd;
+	char	*line;
 
 	if (i == 0)
 	{
-		fd = open_file(argv[1], 1);
-		if (dup2(fd, STDIN_FILENO) == -1)
-			merror("Error with dup2\n");
+		if (!ft_strncmp("here_doc", argv[1], 8))
+		{
+			write(1, "Here_doc \n", 10);
+			line = get_next_line(STDIN_FILENO);
+			write(fds[1], line, ft_strlen(line));
+			free(line);
+		}
+		else
+		{
+			fd = open_file(argv[1], 1);
+			if (dup2(fd, STDIN_FILENO) == -1)
+				merror("Error with dup2\n");
+		}
 	}
 	else
 	{
@@ -123,7 +134,7 @@ int	*create_childs(int **fds, int nb_process, char **argv, char **env)
 	return (childs);
 }
 
-void	create_parent(int **fds, int *childs, int nb_process)
+void	parent(int **fds, int *childs, int nb_process)
 {
 	int	i;
 
@@ -144,6 +155,13 @@ void	create_parent(int **fds, int *childs, int nb_process)
 	}
 }
 
+void	here_dot()
+{
+	int	child;
+	int	fd[2];
+
+}
+
 //fork() => child process = 0 else main process
 //pipe() => fd[0] = read, fd[1] = write
 //execve => v = array, e = env (Error = -1)
@@ -155,17 +173,18 @@ int	main(int argc, char **argv, char **env)
 	int	i;
 	int	nb_process;
 
-	if (!ft_strncmp("here_doc", argv[1], 8))
+	/*if (!ft_strncmp("here_doc", argv[1], 8))
 	{
 		if (argc != 6)
 			merror("nb d'arg no correct with here_doc\n");
-	}
+		here_dot();
+	}*/
 	if (argc < 5)
 		merror("nb d'arg no correct\n");
 	i = 0;
 	nb_process = argc -3;
 	fds = create_fds(nb_process);
 	childs = create_childs(fds, nb_process, argv, env);
-	create_parent(fds, childs, nb_process);
+	parent(fds, childs, nb_process);
 	return (0);
 }
