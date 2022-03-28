@@ -6,7 +6,7 @@
 /*   By: agunesli <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/20 16:10:17 by agunesli          #+#    #+#             */
-/*   Updated: 2022/03/20 16:11:17 by agunesli         ###   ########.fr       */
+/*   Updated: 2022/03/28 21:47:34 by agunesli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,4 +31,14 @@ int		open_file(char *file, int i);
 char	*correct_path(char *cmd, char **env);
 void	free_all_int(int **bin);
 int		ft_strncmp(const char *s1, const char *s2, size_t n);
+
+//Structure for bonus
+typedef struct s_donnee
+{
+	int		**fds;
+	int		nb_process;
+	int		here_doc;
+	char	**argv;
+	char	**env;
+}	t_donnee
 #endif

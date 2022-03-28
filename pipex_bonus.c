@@ -6,7 +6,7 @@
 /*   By: agunesli <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/20 16:07:27 by agunesli          #+#    #+#             */
-/*   Updated: 2022/03/22 15:29:21 by agunesli         ###   ########.fr       */
+/*   Updated: 2022/03/28 21:49:42 by agunesli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,27 +33,38 @@ void	close_fds(int **fds, int nb_process, int i)
 	}
 }
 
-void	ft_dup2(int **fds, int i, int nb_process, char **argv)
+void	start_for_open(char **argv)
 {
-	int	fd;
 	char	*line;
+	int		fd;
 
-	if (i == 0)
+	if (!ft_strncmp("here_doc", argv[1], 8))
 	{
-		if (!ft_strncmp("here_doc", argv[1], 8))
+		write(1, "pipe heredoc>", 13);
+		line = get_next_line(STDIN_FILENO);
+		while (ft_strncmp(argv[2], line, ft_strlen(argv[2])))
 		{
-			write(1, "Here_doc \n", 10);
-			line = get_next_line(STDIN_FILENO);
 			write(fds[1], line, ft_strlen(line));
 			free(line);
+			write(1, "pipe heredoc>", 13);
+			line = get_next_line(STDIN_FILENO);
 		}
-		else
-		{
-			fd = open_file(argv[1], 1);
-			if (dup2(fd, STDIN_FILENO) == -1)
-				merror("Error with dup2\n");
-		}
+		free(line);
 	}
+	else
+	{
+		fd = open_file(argv[1], 1);
+		if (dup2(fd, STDIN_FILENO) == -1)
+			merror("Error with dup2\n");
+	}
+}
+
+void	ft_dup2(int **fds, int i, int nb_process, char **argv)
+{
+	int		fd;
+
+	if (i == 0)
+		start_for_open(argv);
 	else
 	{
 		if (dup2(fds[i][0], STDIN_FILENO) == -1)
@@ -94,7 +105,7 @@ int	**create_fds(int nb_process)
 	return (fds);
 }
 
-int	*create_childs(int **fds, int nb_process, char **argv, char **env)
+int	*create_childs(t_donnee donnee)
 {
 	int		*childs;
 	int		i;
@@ -105,27 +116,35 @@ int	*create_childs(int **fds, int nb_process, char **argv, char **env)
 	if (!childs)
 		merror("Error with malloc childs\n");
 	i = 0;
-	while (i < nb_process)
+	while (i < donnee.nb_process)
 	{
 		childs[i] = fork();
 		if (childs[i] == -1)
 			merror("Error with fork child\n");
 		if (childs[i] == 0)
 		{
-			close_fds(fds, nb_process, i);
-			ft_dup2(fds, i, nb_process, argv);
-			cmd_arg = ft_split(argv[i + 2], ' ');
-			path = correct_path(argv[i + 2], env);
-			if (execve(path, cmd_arg, env) == -1)
+			close_fds(donnee.fds, donnee.nb_process, i);
+			ft_dup2(donnee.fds, i, donnee.nb_process, donnee.argv);
+			if (donnee.here_doc)
+			{
+				cmd_arg = ft_split(donnee.argv[i + 3], ' ');
+				path = correct_path(donnee.argv[i + 3], donnee.env);
+			}
+			else
+			{
+				cmd_arg = ft_split(donnee.argv[i + 2], ' ');
+				path = correct_path(donnee.argv[i + 2], donnee.env);
+			}
+			if (execve(path, cmd_arg, donnee.env) == -1)
 			{
 				free_all(cmd_arg);
 				free(path);
 				free(childs);
-				if (close(fds[i][0]) == -1)
+				if (close(donnee.fds[i][0]) == -1)
 					merror("Error with close\n");
-				if (close(fds[i + 1][1]) == -1)
+				if (close(donnee.fds[i + 1][1]) == -1)
 					merror("Error with close\n");
-				free_all_int(fds);
+				free_all_int(donnee.fds);
 				merror("Error with execve\n");
 			}
 		}
@@ -146,20 +165,28 @@ void	parent(int **fds, int *childs, int nb_process)
 		i++;
 	}
 	free_all_int(fds);
-	free(childs);
 	i = 0;
 	while (i < nb_process)
 	{
 		waitpid(childs[i], NULL, 0);
 		i++;
 	}
+	free(childs);
 }
 
-void	here_dot()
+t_donnee	create_struct(int **fds, int nb_process, char **argv, char **env)
 {
-	int	child;
-	int	fd[2];
+	t_donnee	donnee;
 
+	donnee.fds = fds;
+	donnee.nb_process = nb_process;
+	if (!ft_strncmp("here_doc", argv[1], 8))
+		donnee.here_doc = 1;
+	else
+		donnee.here_doc = 0;
+	donnee.argv = argv;
+	donnee.env = env;
+	return (donnee);
 }
 
 //fork() => child process = 0 else main process
@@ -168,23 +195,24 @@ void	here_dot()
 //nb_process => argc - 3 car fdint, fdout, pipex
 int	main(int argc, char **argv, char **env)
 {
-	int	**fds;
-	int	*childs;
-	int	i;
-	int	nb_process;
+	int			**fds;
+	int			*childs;
+	int			here_doc;
+	int			nb_process;
+	t_donnee	donnee;
 
-	/*if (!ft_strncmp("here_doc", argv[1], 8))
-	{
-		if (argc != 6)
-			merror("nb d'arg no correct with here_doc\n");
-		here_dot();
-	}*/
 	if (argc < 5)
 		merror("nb d'arg no correct\n");
-	i = 0;
-	nb_process = argc -3;
+	here_doc = 0;
+	if (!ft_strncmp("here_doc", argv[1], 8))
+		here_doc = 1;
+	if (here_doc)
+		nb_process = argc - 4;
+	else
+		nb_process = argc - 3;
 	fds = create_fds(nb_process);
-	childs = create_childs(fds, nb_process, argv, env);
+	donnee = create_struct(fds, nb_process, **argv, **env);
+	childs = create_childs(donnee);
 	parent(fds, childs, nb_process);
 	return (0);
 }

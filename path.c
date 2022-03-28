@@ -6,12 +6,12 @@
 /*   By: agunesli <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/20 16:08:23 by agunesli          #+#    #+#             */
-/*   Updated: 2022/03/20 16:08:38 by agunesli         ###   ########.fr       */
+/*   Updated: 2022/03/28 21:47:09 by agunesli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
-#include <stdio.h>
+
 char	**found_path(char **env)
 {
 	int		i;
