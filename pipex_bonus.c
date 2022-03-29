@@ -1,39 +1,18 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   pipex.c                                            :+:      :+:    :+:   */
+/*   pipex_bonus.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: agunesli <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/03/20 16:07:27 by agunesli          #+#    #+#             */
-/*   Updated: 2022/03/28 21:49:42 by agunesli         ###   ########.fr       */
+/*   Created: 2022/03/29 17:59:13 by agunesli          #+#    #+#             */
+/*   Updated: 2022/03/29 19:31:24 by agunesli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
 
-void	close_fds(int **fds, int nb_process, int i)
-{
-	int	j;
-
-	j = 0;
-	while (j < nb_process)
-	{
-		if (j != i)
-		{
-			if (close(fds[j][0]) == -1)
-				merror("Error with close\n");
-		}
-		if (j != i + 1)
-		{
-			if (close(fds[j][1]) == -1)
-				merror("Error with close\n");
-		}
-		j++;
-	}
-}
-
-void	start_for_open(char **argv)
+void	start_for_open(int **fds, char **argv)
 {
 	char	*line;
 	int		fd;
@@ -44,7 +23,7 @@ void	start_for_open(char **argv)
 		line = get_next_line(STDIN_FILENO);
 		while (ft_strncmp(argv[2], line, ft_strlen(argv[2])))
 		{
-			write(fds[1], line, ft_strlen(line));
+			write(fds[0][1], line, ft_strlen(line));
 			free(line);
 			write(1, "pipe heredoc>", 13);
 			line = get_next_line(STDIN_FILENO);
@@ -64,7 +43,7 @@ void	ft_dup2(int **fds, int i, int nb_process, char **argv)
 	int		fd;
 
 	if (i == 0)
-		start_for_open(argv);
+		start_for_open(fds, argv);
 	else
 	{
 		if (dup2(fds[i][0], STDIN_FILENO) == -1)
@@ -72,7 +51,10 @@ void	ft_dup2(int **fds, int i, int nb_process, char **argv)
 	}
 	if (i == nb_process - 1)
 	{
-		fd = open_file(argv[nb_process + 2], 2);
+		if (!ft_strncmp("here_doc", argv[1], 8))
+			fd = open_file(argv[nb_process + 3], 2);
+		else
+			fd = open_file(argv[nb_process + 2], 2);
 		if (dup2(fd, STDOUT_FILENO) == -1)
 			merror("Error with dup2\n");
 	}
@@ -105,54 +87,6 @@ int	**create_fds(int nb_process)
 	return (fds);
 }
 
-int	*create_childs(t_donnee donnee)
-{
-	int		*childs;
-	int		i;
-	char	**cmd_arg;
-	char	*path;
-
-	childs = (int *)malloc(sizeof(int) * nb_process);
-	if (!childs)
-		merror("Error with malloc childs\n");
-	i = 0;
-	while (i < donnee.nb_process)
-	{
-		childs[i] = fork();
-		if (childs[i] == -1)
-			merror("Error with fork child\n");
-		if (childs[i] == 0)
-		{
-			close_fds(donnee.fds, donnee.nb_process, i);
-			ft_dup2(donnee.fds, i, donnee.nb_process, donnee.argv);
-			if (donnee.here_doc)
-			{
-				cmd_arg = ft_split(donnee.argv[i + 3], ' ');
-				path = correct_path(donnee.argv[i + 3], donnee.env);
-			}
-			else
-			{
-				cmd_arg = ft_split(donnee.argv[i + 2], ' ');
-				path = correct_path(donnee.argv[i + 2], donnee.env);
-			}
-			if (execve(path, cmd_arg, donnee.env) == -1)
-			{
-				free_all(cmd_arg);
-				free(path);
-				free(childs);
-				if (close(donnee.fds[i][0]) == -1)
-					merror("Error with close\n");
-				if (close(donnee.fds[i + 1][1]) == -1)
-					merror("Error with close\n");
-				free_all_int(donnee.fds);
-				merror("Error with execve\n");
-			}
-		}
-		i++;
-	}
-	return (childs);
-}
-
 void	parent(int **fds, int *childs, int nb_process)
 {
 	int	i;
@@ -172,21 +106,6 @@ void	parent(int **fds, int *childs, int nb_process)
 		i++;
 	}
 	free(childs);
-}
-
-t_donnee	create_struct(int **fds, int nb_process, char **argv, char **env)
-{
-	t_donnee	donnee;
-
-	donnee.fds = fds;
-	donnee.nb_process = nb_process;
-	if (!ft_strncmp("here_doc", argv[1], 8))
-		donnee.here_doc = 1;
-	else
-		donnee.here_doc = 0;
-	donnee.argv = argv;
-	donnee.env = env;
-	return (donnee);
 }
 
 //fork() => child process = 0 else main process
@@ -211,8 +130,8 @@ int	main(int argc, char **argv, char **env)
 	else
 		nb_process = argc - 3;
 	fds = create_fds(nb_process);
-	donnee = create_struct(fds, nb_process, **argv, **env);
-	childs = create_childs(donnee);
+	donnee = create_struct(fds, nb_process, argv, env);
+	childs = create_childs(&donnee);
 	parent(fds, childs, nb_process);
 	return (0);
 }

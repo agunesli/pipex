@@ -6,11 +6,12 @@
 /*   By: agunesli <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/20 16:07:27 by agunesli          #+#    #+#             */
-/*   Updated: 2022/03/22 16:43:59 by agunesli         ###   ########.fr       */
+/*   Updated: 2022/03/29 19:07:56 by agunesli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
+#include <stdio.h>
 
 void	ft_child1(int *fd, int fdin, char *argv, char **env)
 {
@@ -81,9 +82,9 @@ int	main(int argc, char **argv, char **env)
 	child2 = fork();
 	if (child1 == -1 || child2 == -1)
 		merror("Error with fork child\n");
-	if (child1 == 0)
+	if (child1 == 0 && child2 != 0)
 		ft_child1(fd, fdin, argv[2], env);
-	if (child2 == 0)
+	if (child2 == 0 && child1 != 0)
 		ft_child2(fd, fdout, argv[3], env);
 	if (close(fd[1]) == -1 || close(fd[0]) == -1)
 		merror("Error with close\n");

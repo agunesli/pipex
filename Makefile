@@ -1,8 +1,9 @@
-SRC_F	= ft_strdup.c ft_strlen.c ft_split.c ft_strjoin.c ft_substr.c ft_strncmp.c path.c utils.c
+SRC_F	= ft_split.c ft_substr.c ft_strncmp.c path.c utils.c \
+		  get_next_line.c get_next_line_utils.c \
 
 SRC_M	= pipex.c
 
-SRC_B	= pipex_bonus.c
+SRC_B	= pipex_bonus.c pipex_bonus2.c
 
 SRC_H	= pipex.h
 

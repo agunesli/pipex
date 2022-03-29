@@ -6,7 +6,7 @@
 /*   By: agunesli <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/20 16:10:17 by agunesli          #+#    #+#             */
-/*   Updated: 2022/03/28 21:47:34 by agunesli         ###   ########.fr       */
+/*   Updated: 2022/03/29 18:56:43 by agunesli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,17 +20,14 @@
 # include <sys/wait.h>
 
 // utiles
-char	*ft_strdup(const char *src);
-size_t	ft_strlen(const char *s);
-char	**ft_split(char const *s, char c);
-char	*ft_substr(char const *s, unsigned int start, size_t len);
-char	*ft_strjoin(char const *s1, char const *s2);
-void	free_all(char **bin);
-void	merror(char *str);
-int		open_file(char *file, int i);
-char	*correct_path(char *cmd, char **env);
-void	free_all_int(int **bin);
-int		ft_strncmp(const char *s1, const char *s2, size_t n);
+char		**ft_split(char const *s, char c);
+char		*ft_substr(char const *s, unsigned int start, size_t len);
+void		free_all(char **bin);
+void		merror(char *str);
+int			open_file(char *file, int i);
+char		*correct_path(char *cmd, char **env);
+void		free_all_int(int **bin);
+int			ft_strncmp(const char *s1, const char *s2, size_t n);
 
 //Structure for bonus
 typedef struct s_donnee
@@ -40,5 +37,23 @@ typedef struct s_donnee
 	int		here_doc;
 	char	**argv;
 	char	**env;
-}	t_donnee
+}	t_donnee;
+
+typedef struct s_cmd
+{
+	char	**cmd_arg;
+	char	*path;
+}	t_cmd;
+
+// Function bonus
+t_donnee	create_struct(int **fds, int nb_process, char **argv, char **env);
+int			*create_childs(t_donnee *donnee);
+void		ft_dup2(int **fds, int i, int nb_process, char **argv);
+
+//Get_next_line
+char		*get_next_line(int fd);
+size_t		ft_strlen(const char *s);
+char		*ft_substr_end(char const *s, unsigned int start, size_t end);
+char		*ft_strdup(const char *src);
+char		*ft_strjoin(char const *s1, char const *s2);
 #endif
