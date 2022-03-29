@@ -6,29 +6,37 @@
 /*   By: agunesli <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/29 17:59:13 by agunesli          #+#    #+#             */
-/*   Updated: 2022/03/29 20:21:09 by agunesli         ###   ########.fr       */
+/*   Updated: 2022/03/30 00:38:20 by agunesli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
+#include <stdio.h>
 
 void	start_for_open(int **fds, char **argv)
 {
 	char	*line;
 	int		fd;
+	char	*rd = "";
 
 	if (!ft_strncmp("here_doc", argv[1], 8))
 	{
 		write(1, "pipe heredoc>", 13);
-		line = get_next_line(STDIN_FILENO);
+		line = get_next_line(0);
 		while (ft_strncmp(argv[2], line, ft_strlen(argv[2])))
 		{
-			write(fds[0][1], line, ft_strlen(line));
+			dprintf(2, "write %zd \n", write(fds[0][1], line, ft_strlen(line)));
+			/*if (write(fds[0][1], line, ft_strlen(line)) == -1)
+				merror("Error with write\n");*/
 			free(line);
 			write(1, "pipe heredoc>", 13);
-			line = get_next_line(STDIN_FILENO);
+			line = get_next_line(0);
 		}
 		free(line);
+		dprintf(2, "read is %zd %s", read(fds[0][0], rd, ft_strlen(rd)), rd);
+		dprintf(2, "fd is %d\n", fds[0][1]);
+		if (dup2(fds[0][0], 0) == -1)
+			merror("Error with dup2\n");
 	}
 	else
 	{

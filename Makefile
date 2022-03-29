@@ -27,8 +27,10 @@ $(NAME):$(OBJ_M) $(OBJ_F) $(SRC_H)
 
 all:	$(NAME)
 
-bonus:	$(OBJ_F) $(OBJ_B)
-		$(CC) $(OBJ_F) $(OBJ_B) -o $(NAME_B)
+$(NAME_B) : $(OBJ_B) $(OBJ_F)
+			$(CC) $(OBJ_F) $(OBJ_B) -o $(NAME_B)
+
+bonus:	$(NAME_B)
 
 clean:
 		$(RM) $(OBJ_M) $(OBJ_F) $(OBJ_B)
