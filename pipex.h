@@ -6,7 +6,7 @@
 /*   By: agunesli <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/20 16:10:17 by agunesli          #+#    #+#             */
-/*   Updated: 2022/03/29 18:56:43 by agunesli         ###   ########.fr       */
+/*   Updated: 2022/03/29 20:18:11 by agunesli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ void		free_all(char **bin);
 void		merror(char *str);
 int			open_file(char *file, int i);
 char		*correct_path(char *cmd, char **env);
-void		free_all_int(int **bin);
+void		free_all_int(int **bin, int nb_process);
 int			ft_strncmp(const char *s1, const char *s2, size_t n);
 
 //Structure for bonus

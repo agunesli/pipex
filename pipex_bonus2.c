@@ -6,7 +6,7 @@
 /*   By: agunesli <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/29 17:59:27 by agunesli          #+#    #+#             */
-/*   Updated: 2022/03/29 19:22:58 by agunesli         ###   ########.fr       */
+/*   Updated: 2022/03/29 20:19:11 by agunesli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,7 +59,7 @@ void	not_execve(t_donnee *donnee, int *childs, t_cmd *scmd, int i)
 		merror("Error with close\n");
 	if (close(donnee->fds[i + 1][1]) == -1)
 		merror("Error with close\n");
-	free_all_int(donnee->fds);
+	free_all_int(donnee->fds, donnee->nb_process);
 	merror("Error with execve\n");
 }
 

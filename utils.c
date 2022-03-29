@@ -6,7 +6,7 @@
 /*   By: agunesli <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/20 16:08:59 by agunesli          #+#    #+#             */
-/*   Updated: 2022/03/20 16:09:16 by agunesli         ###   ########.fr       */
+/*   Updated: 2022/03/29 20:17:45 by agunesli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,12 +25,12 @@ void	free_all(char **bin)
 	free(bin);
 }
 
-void	free_all_int(int **bin)
+void	free_all_int(int **bin, int nb_process)
 {
 	int	i;
 
 	i = 0;
-	while (bin[i])
+	while (i < nb_process)
 	{
 		free(bin[i]);
 		i++;

@@ -6,7 +6,7 @@
 /*   By: agunesli <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/29 17:59:13 by agunesli          #+#    #+#             */
-/*   Updated: 2022/03/29 19:31:24 by agunesli         ###   ########.fr       */
+/*   Updated: 2022/03/29 20:21:09 by agunesli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,7 +83,6 @@ int	**create_fds(int nb_process)
 			merror("Error with pipe\n");
 		i++;
 	}
-	fds[i] = NULL;
 	return (fds);
 }
 
@@ -98,7 +97,7 @@ void	parent(int **fds, int *childs, int nb_process)
 		close(fds[i][1]);
 		i++;
 	}
-	free_all_int(fds);
+	free_all_int(fds, nb_process);
 	i = 0;
 	while (i < nb_process)
 	{

@@ -16,7 +16,7 @@ OBJ_B	= $(SRC_B:%.c=%.o)
 NAME	=	pipex
 NAME_B	=	pipex_bonus
 CC		=	gcc
-FLAGS	=	-Wall -Wextra -Werror
+FLAGS	=	-g3 -Wall -Wextra -Werror
 RM		=	rm -rf
 
 %.o: %.c
@@ -35,6 +35,7 @@ clean:
 
 fclean:	clean
 		$(RM) $(NAME)
+		$(RM) $(NAME_B)
 
 re:		fclean all
 
