@@ -14,8 +14,8 @@ OBJ_F	= $(SRC_F:%.c=%.o)
 OBJ_B	= $(SRC_B:%.c=%.o)
 
 NAME	=	pipex
+NAME_B	=	pipex_bonus
 CC		=	gcc
-#FLAGS	=	-g3 -Wall -Wextra -Werror -fsanitize=address
 FLAGS	=	-Wall -Wextra -Werror
 RM		=	rm -rf
 
@@ -28,7 +28,7 @@ $(NAME):$(OBJ_M) $(OBJ_F) $(SRC_H)
 all:	$(NAME)
 
 bonus:	$(OBJ_F) $(OBJ_B)
-		$(CC) $(OBJ_F) $(OBJ_B) -o $(NAME)
+		$(CC) $(OBJ_F) $(OBJ_B) -o $(NAME_B)
 
 clean:
 		$(RM) $(OBJ_M) $(OBJ_F) $(OBJ_B)
