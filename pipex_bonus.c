@@ -6,30 +6,31 @@
 /*   By: agunesli <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/29 17:59:13 by agunesli          #+#    #+#             */
-/*   Updated: 2022/03/31 20:12:27 by agunesli         ###   ########.fr       */
+/*   Updated: 2022/03/31 22:33:32 by agunesli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
 
-void	start_for_open(int **fds, char **argv)
+void	start_for_open(char **argv)
 {
 	char	*line;
 	int		fd;
 
 	if (!ft_strncmp("here_doc", argv[1], 8))
 	{
+		fd = open(".here_doc", O_CREAT | O_RDWR | O_TRUNC, 511);
 		write(1, "pipe heredoc>", 13);
 		line = get_next_line(STDIN_FILENO);
 		while (ft_strncmp(argv[2], line, ft_strlen(argv[2])))
 		{
-			write(fds[0][1], line, ft_strlen(line));
+			write(fd, line, ft_strlen(line));
 			free(line);
 			write(1, "pipe heredoc>", 13);
 			line = get_next_line(STDIN_FILENO);
 		}
 		free(line);
-		if (dup2(fds[0][0], STDIN_FILENO) == -1)
+		if (dup2(fd, STDIN_FILENO) == -1)
 			merror("Error with dup2\n");
 	}
 	else
@@ -45,7 +46,7 @@ void	ft_dup2(int **fds, int i, int nb_process, char **argv)
 	int		fd;
 
 	if (i == 0)
-		start_for_open(fds, argv);
+		start_for_open(argv);
 	else
 	{
 		if (dup2(fds[i][0], STDIN_FILENO) == -1)
@@ -62,6 +63,7 @@ void	ft_dup2(int **fds, int i, int nb_process, char **argv)
 	}
 	else
 	{
+		write(2, "bouh", 4);
 		if (dup2(fds[i + 1][1], STDOUT_FILENO) == -1)
 			merror("Error with dup2\n");
 	}
