@@ -6,14 +6,13 @@
 /*   By: agunesli <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/29 17:59:27 by agunesli          #+#    #+#             */
-/*   Updated: 2022/03/30 00:22:51 by agunesli         ###   ########.fr       */
+/*   Updated: 2022/03/29 20:19:11 by agunesli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
-#include <stdio.h>
 
-void	close_fds(int **fds, int nb_process, int here_doc, int i)
+void	close_fds(int **fds, int here_doc, int nb_process, int i)
 {
 	int	j;
 
@@ -22,19 +21,19 @@ void	close_fds(int **fds, int nb_process, int here_doc, int i)
 	{
 		if (j != i)
 		{
-			 if (!(here_doc && j == 0))
-			 {
+			if (!(here_doc && j == 0))
+			{
 				if (close(fds[j][0]) == -1)
 					merror("Error with close\n");
-			 }
+			}
 		}
 		if (j != i + 1)
 		{
-			 if (!(here_doc && j == 0))
-			 {
-				 if (close(fds[j][1]) == -1)
-					 merror("Error with close\n");
-			 }
+			if (!(here_doc && j == 0))
+			{
+				if (close(fds[j][1]) == -1)
+					merror("Error with close\n");
+			}
 		}
 		j++;
 	}
@@ -87,8 +86,8 @@ int	*create_childs(t_donnee *donnee)
 			merror("Error with fork child\n");
 		if (childs[i] == 0)
 		{
+			close_fds(donnee->fds, donnee->here_doc, donnee->nb_process, i);
 			ft_dup2(donnee->fds, i, donnee->nb_process, donnee->argv);
-			close_fds(donnee->fds, donnee->nb_process, donnee->here_doc, i);
 			scmd = create_t_cmd(donnee, i);
 			if (execve(scmd.path, scmd.cmd_arg, donnee->env) == -1)
 				not_execve(donnee, childs, &scmd, i);

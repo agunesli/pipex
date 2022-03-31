@@ -16,7 +16,7 @@ OBJ_B	= $(SRC_B:%.c=%.o)
 NAME	=	pipex
 NAME_B	=	pipex_bonus
 CC		=	gcc
-FLAGS	=	-g3 -Wall -Wextra -Werror
+FLAGS	=	-Wall -Wextra -Werror
 RM		=	rm -rf
 
 %.o: %.c
@@ -27,11 +27,10 @@ $(NAME):$(OBJ_M) $(OBJ_F) $(SRC_H)
 
 all:	$(NAME)
 
-$(NAME_B) : $(OBJ_B) $(OBJ_F)
-			$(CC) $(OBJ_F) $(OBJ_B) -o $(NAME_B)
+$(NAME_B)	: $(OBJ_F) $(OBJ_B) $(SRC_H)
+		$(CC) $(OBJ_F) $(OBJ_B) -o $(NAME_B)
 
 bonus:	$(NAME_B)
-
 clean:
 		$(RM) $(OBJ_M) $(OBJ_F) $(OBJ_B)
 
