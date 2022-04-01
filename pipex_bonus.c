@@ -6,7 +6,7 @@
 /*   By: agunesli <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/29 17:59:13 by agunesli          #+#    #+#             */
-/*   Updated: 2022/03/31 22:33:32 by agunesli         ###   ########.fr       */
+/*   Updated: 2022/04/01 15:03:18 by agunesli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ void	start_for_open(char **argv)
 
 	if (!ft_strncmp("here_doc", argv[1], 8))
 	{
-		fd = open(".here_doc", O_CREAT | O_RDWR | O_TRUNC, 511);
+		fd = open(".here_doc", O_CREAT | O_RDWR | O_TRUNC, 644);
 		write(1, "pipe heredoc>", 13);
 		line = get_next_line(STDIN_FILENO);
 		while (ft_strncmp(argv[2], line, ft_strlen(argv[2])))
@@ -55,7 +55,7 @@ void	ft_dup2(int **fds, int i, int nb_process, char **argv)
 	if (i == nb_process - 1)
 	{
 		if (!ft_strncmp("here_doc", argv[1], 8))
-			fd = open_file(argv[nb_process + 3], 2);
+			fd = open_file(argv[nb_process + 3], 3);
 		else
 			fd = open_file(argv[nb_process + 2], 2);
 		if (dup2(fd, STDOUT_FILENO) == -1)
@@ -63,7 +63,6 @@ void	ft_dup2(int **fds, int i, int nb_process, char **argv)
 	}
 	else
 	{
-		write(2, "bouh", 4);
 		if (dup2(fds[i + 1][1], STDOUT_FILENO) == -1)
 			merror("Error with dup2\n");
 	}

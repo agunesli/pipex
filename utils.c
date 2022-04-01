@@ -6,7 +6,7 @@
 /*   By: agunesli <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/20 16:08:59 by agunesli          #+#    #+#             */
-/*   Updated: 2022/03/29 20:17:45 by agunesli         ###   ########.fr       */
+/*   Updated: 2022/04/01 15:04:48 by agunesli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,6 +58,13 @@ int	open_file(char *file, int i)
 	else if (i == 2)
 	{
 		fd = open(file, O_CREAT | O_RDWR | O_TRUNC, 511);
+		if (fd == -1)
+			merror("Error open file out\n");
+		return (fd);
+	}
+	else if (i == 3)
+	{
+		fd = open(file, O_CREAT | O_WRONLY | O_APPEND, 511);
 		if (fd == -1)
 			merror("Error open file out\n");
 		return (fd);
