@@ -35,6 +35,7 @@ typedef struct s_donnee
 	int		**fds;
 	int		nb_process;
 	int		here_doc;
+	int		argc;
 	char	**argv;
 	char	**env;
 }	t_donnee;

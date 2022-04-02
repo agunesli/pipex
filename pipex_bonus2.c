@@ -78,6 +78,8 @@ int	*create_childs(t_donnee *donnee)
 		childs[i] = fork();
 		if (childs[i] == -1)
 			merror("Error with fork child\n");
+		if (donnee->here_doc)
+			waitpid(childs[0], NULL, 0);
 		if (childs[i] == 0)
 		{
 			close_fds(donnee->fds, donnee->nb_process, i);

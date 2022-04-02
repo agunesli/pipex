@@ -16,13 +16,16 @@ void	start_for_open(char **argv)
 {
 	char	*line;
 	int		fd;
+	char	*lim;
 
 	if (!ft_strncmp("here_doc", argv[1], 8))
 	{
-		fd = open(".here_doc", O_CREAT | O_RDWR | O_TRUNC, 644);
+		lim = ft_strjoin(argv[2], "\n");
+//		fd = open_file(".here_doc", 2);
+		fd = open(".here_doc", O_CREAT | O_RDWR | O_TRUNC, 00777);
 		write(1, "pipe heredoc>", 13);
 		line = get_next_line(STDIN_FILENO);
-		while (ft_strncmp(argv[2], line, ft_strlen(argv[2])))
+		while (ft_strncmp(lim, line, ft_strlen(lim)))
 		{
 			write(fd, line, ft_strlen(line));
 			free(line);
@@ -30,15 +33,12 @@ void	start_for_open(char **argv)
 			line = get_next_line(STDIN_FILENO);
 		}
 		free(line);
-		if (dup2(fd, STDIN_FILENO) == -1)
-			merror("Error with dup2\n");
+		free(lim);
 	}
 	else
-	{
 		fd = open_file(argv[1], 1);
-		if (dup2(fd, STDIN_FILENO) == -1)
-			merror("Error with dup2\n");
-	}
+	if (dup2(fd, STDIN_FILENO) == -1)
+		merror("Error with dup2\n");
 }
 
 void	ft_dup2(int **fds, int i, int nb_process, char **argv)
@@ -46,16 +46,23 @@ void	ft_dup2(int **fds, int i, int nb_process, char **argv)
 	int		fd;
 
 	if (i == 0)
+	{
+		write(2,"b0\n",3); //////
 		start_for_open(argv);
+	}
 	else
 	{
+		write(2,"b1\n",3); //////
 		if (dup2(fds[i][0], STDIN_FILENO) == -1)
 			merror("Error with dup2\n");
 	}
 	if (i == nb_process - 1)
 	{
 		if (!ft_strncmp("here_doc", argv[1], 8))
+		{
 			fd = open_file(argv[nb_process + 3], 3);
+			write(2,"b2\n",3); //////
+		}
 		else
 			fd = open_file(argv[nb_process + 2], 2);
 		if (dup2(fd, STDOUT_FILENO) == -1)
@@ -63,6 +70,7 @@ void	ft_dup2(int **fds, int i, int nb_process, char **argv)
 	}
 	else
 	{
+		write(2,"b3\n",3); //////
 		if (dup2(fds[i + 1][1], STDOUT_FILENO) == -1)
 			merror("Error with dup2\n");
 	}
