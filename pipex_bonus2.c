@@ -6,7 +6,7 @@
 /*   By: agunesli <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/29 17:59:27 by agunesli          #+#    #+#             */
-/*   Updated: 2022/04/01 15:04:46 by agunesli         ###   ########.fr       */
+/*   Updated: 2022/04/04 11:06:57 by agunesli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,8 +78,6 @@ int	*create_childs(t_donnee *donnee)
 		childs[i] = fork();
 		if (childs[i] == -1)
 			merror("Error with fork child\n");
-		if (donnee->here_doc)
-			waitpid(childs[0], NULL, 0);
 		if (childs[i] == 0)
 		{
 			close_fds(donnee->fds, donnee->nb_process, i);
@@ -88,6 +86,8 @@ int	*create_childs(t_donnee *donnee)
 			if (execve(scmd.path, scmd.cmd_arg, donnee->env) == -1)
 				not_execve(donnee, childs, &scmd, i);
 		}
+		if (donnee->here_doc && i == 0)
+			waitpid(childs[0], NULL, 0);
 		i++;
 	}
 	return (childs);
