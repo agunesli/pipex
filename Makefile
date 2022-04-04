@@ -3,7 +3,7 @@ SRC_F	= ft_split.c ft_substr.c ft_strncmp.c path.c utils.c \
 
 SRC_M	= pipex.c
 
-SRC_B	= pipex_bonus.c pipex_bonus2.c
+SRC_B	= pipex_bonus.c pipex_bonus2.c here_doc.c 
 
 SRC_H	= pipex.h
 

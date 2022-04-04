@@ -6,7 +6,7 @@
 /*   By: agunesli <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/20 16:10:17 by agunesli          #+#    #+#             */
-/*   Updated: 2022/03/29 20:18:11 by agunesli         ###   ########.fr       */
+/*   Updated: 2022/04/04 12:02:10 by agunesli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,6 +50,7 @@ typedef struct s_cmd
 t_donnee	create_struct(int **fds, int nb_process, char **argv, char **env);
 int			*create_childs(t_donnee *donnee);
 void		ft_dup2(int **fds, int i, int nb_process, char **argv);
+int			ft_heredoc(char *line);
 
 //Get_next_line
 char		*get_next_line(int fd);

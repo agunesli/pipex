@@ -6,36 +6,21 @@
 /*   By: agunesli <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/29 17:59:13 by agunesli          #+#    #+#             */
-/*   Updated: 2022/04/04 11:06:55 by agunesli         ###   ########.fr       */
+/*   Updated: 2022/04/04 12:21:18 by agunesli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
-#include <stdio.h>
 
 void	start_for_open(char **argv)
 {
-	char	*line;
 	int		fd;
 	char	*lim;
 
 	if (!ft_strncmp("here_doc", argv[1], 8))
 	{
 		lim = ft_strjoin(argv[2], "\n");
-		fd = open(".here_doc", O_CREAT | O_RDWR | O_TRUNC, 00777);
-		write(1, "pipe heredoc>", 13);
-		line = get_next_line(STDIN_FILENO);
-		while (ft_strncmp(lim, line, ft_strlen(lim)))
-		{
-			write(fd, line, ft_strlen(line));
-			free(line);
-			write(1, "pipe heredoc>", 13);
-			line = get_next_line(STDIN_FILENO);
-		}
-		free(line);
-		free(lim);
-		close(fd);
-		fd = open_file(".here_doc", 1);
+		fd = ft_heredoc(lim);
 	}
 	else
 		fd = open_file(argv[1], 1);
@@ -125,11 +110,11 @@ int	main(int argc, char **argv, char **env)
 	t_donnee	donnee;
 
 	here_doc = 0;
+	if (argc < 5)
+		merror("nb d'arg no correct\n");
 	if (!ft_strncmp("here_doc", argv[1], 8))
 		here_doc = 1;
-	if (!here_doc && argc < 5)
-		merror("nb d'arg no correct\n");
-	else if (here_doc && argc < 6)
+	if (here_doc && argc < 6)
 		merror("nb d'arg no correct\n");
 	if (here_doc)
 		nb_process = argc - 4;

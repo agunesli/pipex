@@ -6,7 +6,7 @@
 /*   By: agunesli <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/29 17:59:27 by agunesli          #+#    #+#             */
-/*   Updated: 2022/04/04 11:06:57 by agunesli         ###   ########.fr       */
+/*   Updated: 2022/04/04 11:41:27 by agunesli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,8 +72,8 @@ int	*create_childs(t_donnee *donnee)
 	childs = (int *)malloc(sizeof(int) * donnee->nb_process);
 	if (!childs)
 		merror("Error with malloc childs\n");
-	i = 0;
-	while (i < donnee->nb_process)
+	i = -1;
+	while (++i < donnee->nb_process)
 	{
 		childs[i] = fork();
 		if (childs[i] == -1)
@@ -88,7 +88,6 @@ int	*create_childs(t_donnee *donnee)
 		}
 		if (donnee->here_doc && i == 0)
 			waitpid(childs[0], NULL, 0);
-		i++;
 	}
 	return (childs);
 }
