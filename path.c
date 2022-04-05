@@ -12,30 +12,31 @@
 
 #include "pipex.h"
 
-char	**found_path(char **env)
+char	**found_path(char **env, char **cmd_arg)
 {
 	int		i;
 	char	*path;
 	char	*tmp;
 	char	**bin;
 
-	i = 0;
-	path = NULL;
-	while (env[i] != NULL)
+	i = ((path = NULL, -1));
+	while (env[++i] != NULL)
 	{
 		if (!ft_strncmp("PATH=/", env[i], 6))
 		{
 			path = ft_strdup(env[i]);
 			break ;
 		}
-		i++;
 	}
 	if (path == NULL)
+	{
+		free(path);
+		free_all(cmd_arg);
 		merror("error with env\n");
+	}
 	tmp = path;
 	path = ft_substr(tmp, 5, ft_strlen(tmp) - 5);
-	free(tmp);
-	bin = ft_split(path, ':');
+	bin = ((free(tmp), ft_split(path, ':')));
 	free(path);
 	return (bin);
 }
@@ -50,7 +51,7 @@ int	len_bin(char **bin)
 	return (i);
 }
 
-char	*found_cmd(char *cmd)
+char	*found_cmd(char *cmd, char **bin, char **cmd_arg)
 {
 	char	**cmd_ag;
 	char	*cmdd;
@@ -59,11 +60,15 @@ char	*found_cmd(char *cmd)
 	cmdd = ft_strjoin("/", cmd_ag[0]);
 	free_all(cmd_ag);
 	if (cmdd == NULL)
+	{
+		free_all(bin);
+		free_all(cmd_arg);
 		merror("Error with split\n");
+	}
 	return (cmdd);
 }
 
-char	*correct_path(char *cmd, char **env)
+char	*correct_path(char *cmd, char **env, char **cmd_arg)
 {
 	char	**bin;
 	char	*tmp;
@@ -71,22 +76,18 @@ char	*correct_path(char *cmd, char **env)
 	int		len;
 	char	*cmdd;
 
-	i = 0;
-	bin = found_path(env);
-	len = len_bin(bin);
-	cmdd = found_cmd(cmd);
+	bin = ((i = 0, found_path(env, cmd_arg)));
+	cmdd = ((len = len_bin(bin), found_cmd(cmd, bin, cmd_arg)));
 	tmp = ft_strjoin(bin[0], cmdd);
 	while (++i < len && access(tmp, F_OK) != 0)
-	{
-		free(tmp);
-		tmp = ft_strjoin(bin[i], cmdd);
-	}
+		tmp = ((free(tmp), ft_strjoin(bin[i], cmdd)));
 	free(cmdd);
 	free_all(bin);
 	if (i == len)
 	{
-		merror("Command no found\n");
-		return (NULL);
+		free_all(cmd_arg);
+		free(tmp);
+		return (merror("Command no found\n"), NULL);
 	}
 	else
 		return (tmp);

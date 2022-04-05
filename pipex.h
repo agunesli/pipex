@@ -25,7 +25,7 @@ char		*ft_substr(char const *s, unsigned int start, size_t len);
 void		free_all(char **bin);
 void		merror(char *str);
 int			open_file(char *file, int i);
-char		*correct_path(char *cmd, char **env);
+char		*correct_path(char *cmd, char **env, char **cmd_arg);
 void		free_all_int(int **bin, int nb_process);
 int			ft_strncmp(const char *s1, const char *s2, size_t n);
 

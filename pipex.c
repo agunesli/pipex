@@ -24,12 +24,14 @@ void	ft_child1(int *fd, char *file, char *argv, char **env)
 		merror("Error with close\n");
 	if (dup2(fdin, STDIN_FILENO) == -1)
 		merror("Error with dup2\n");
+	close(fdin);
 	if (dup2(fd[1], STDOUT_FILENO) == -1)
 		merror("Error with dup2\n");
+	close(fd[1]);
 	cmd_arg = ft_split(argv, ' ');
 	if (cmd_arg == NULL)
 		merror("Error with split\n");
-	path = correct_path(argv, env);
+	path = correct_path(argv, env, cmd_arg);
 	if (execve(path, cmd_arg, env) == -1)
 	{
 		free_all(cmd_arg);
@@ -50,12 +52,14 @@ void	ft_child2(int *fd, char *file, char *argv, char **env)
 		merror("Error with close\n");
 	if (dup2(fd[0], STDIN_FILENO) == -1)
 		merror("Error with dup2\n");
+	close(fd[0]);
 	if (dup2(fdout, STDOUT_FILENO) == -1)
 		merror("Error with dup2\n");
+	close(fdout);
 	cmd_arg = ft_split(argv, ' ');
 	if (cmd_arg == NULL)
 		merror("Error with split\n");
-	path = correct_path(argv, env);
+	path = correct_path(argv, env, cmd_arg);
 	if (execve(path, cmd_arg, env) == -1)
 	{
 		free_all(cmd_arg);
@@ -86,9 +90,9 @@ int	main(int argc, char **argv, char **env)
 		ft_child1(fd, argv[1], argv[2], env);
 	if (child2 == 0 && child1 != 0)
 		ft_child2(fd, argv[4], argv[3], env);
-	if (close(fd[1]) == -1 || close(fd[0]) == -1)
-		merror("Error with close\n");
 	waitpid(child1, NULL, 0);
 	waitpid(child2, NULL, 0);
+	if (close(fd[1]) == -1 || close(fd[0]) == -1)
+		merror("Error with close\n");
 	return (0);
 }
