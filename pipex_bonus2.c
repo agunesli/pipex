@@ -6,7 +6,7 @@
 /*   By: agunesli <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/29 17:59:27 by agunesli          #+#    #+#             */
-/*   Updated: 2022/04/05 23:28:08 by agunesli         ###   ########.fr       */
+/*   Updated: 2022/04/06 23:05:48 by agunesli         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,12 +19,12 @@ void	close_fds(int **fds, int nb_process, int i)
 	j = 0;
 	while (j < nb_process)
 	{
-		if (j != i)
+		if (j != i || i == 0)
 		{
 			if (close(fds[j][0]) == -1)
 				merror("Error with close\n");
 		}
-		if (j != i + 1)
+		if (j != i + 1 || i == nb_process - 1)
 		{
 			if (close(fds[j][1]) == -1)
 				merror("Error with close\n");
@@ -33,76 +33,76 @@ void	close_fds(int **fds, int nb_process, int i)
 	}
 }
 
-t_cmd	create_t_cmd(t_donnee *donnee, int i)
+t_cmd	create_t_cmd(t_donnee *don, int i)
 {
-	t_cmd	scmd;
+	t_cmd	sc;
 
-	if (donnee->here_doc)
+	if (don->here_doc)
 	{
-		scmd.cmd_arg = ft_split(donnee->argv[i + 3], ' ');
-		scmd.path = correct_path(donnee->argv[i + 3], donnee->env);
+		sc.cmd_arg = ft_split(don->argv[i + 3], ' ');
+		sc.path = correct_path(don->argv[i + 3], don->env, sc.cmd_arg);
 	}
 	else
 	{
-		scmd.cmd_arg = ft_split(donnee->argv[i + 2], ' ');
-		scmd.path = correct_path(donnee->argv[i + 2], donnee->env);
+		sc.cmd_arg = ft_split(don->argv[i + 2], ' ');
+		sc.path = correct_path(don->argv[i + 2], don->env, sc.cmd_arg);
 	}
-	return (scmd);
+	return (sc);
 }
 
-void	not_execve(t_donnee *donnee, int *childs, t_cmd *scmd, int i)
+void	not_execve(t_donnee *don, int *childs, t_cmd *scmd, int i)
 {
 	free_all(scmd->cmd_arg);
 	free(scmd->path);
 	free(childs);
-	if (close(donnee->fds[i][0]) == -1)
+	if (close(don->fds[i][0]) == -1)
 		merror("Error with close\n");
-	if (close(donnee->fds[i + 1][1]) == -1)
+	if (close(don->fds[i + 1][1]) == -1)
 		merror("Error with close\n");
-	free_all_int(donnee->fds, donnee->nb_process);
+	free_all_int(don->fds, don->nb_process);
 	merror("Error with execve\n");
 }
 
-int	*create_childs(t_donnee *donnee)
+int	*create_childs(t_donnee *don)
 {
 	int		*childs;
 	int		i;
 	t_cmd	scmd;
 
-	childs = (int *)malloc(sizeof(int) * donnee->nb_process);
+	childs = (int *)malloc(sizeof(int) * don->nb_process);
 	if (!childs)
 		merror("Error with malloc childs\n");
 	i = -1;
-	while (++i < donnee->nb_process)
+	while (++i < don->nb_process)
 	{
 		childs[i] = fork();
 		if (childs[i] == -1)
 			merror("Error with fork child\n");
 		if (childs[i] == 0)
 		{
-			close_fds(donnee->fds, donnee->nb_process, i);
-			ft_dup2(donnee->fds, i, donnee->nb_process, donnee->argv);
-			scmd = create_t_cmd(donnee, i);
-			if (execve(scmd.path, scmd.cmd_arg, donnee->env) == -1)
-				not_execve(donnee, childs, &scmd, i);
+			close_fds(don->fds, don->nb_process, i);
+			ft_dup2(don->fds, i, don->nb_process, don->argv);
+			scmd = create_t_cmd(don, i);
+			if (execve(scmd.path, scmd.cmd_arg, don->env) == -1)
+				not_execve(don, childs, &scmd, i);
 		}
-		if (donnee->here_doc && i == 0)
+		if (don->here_doc && i == 0)
 			waitpid(childs[0], NULL, 0);
 	}
 	return (childs);
 }
 
-t_donnee	create_struct(int **fds, int nb_process, char **argv, char **env)
+t_don	create_struct(int **fds, int nb_process, char **argv, char **env)
 {
-	t_donnee	donnee;
+	t_donnee	don;
 
-	donnee.fds = fds;
-	donnee.nb_process = nb_process;
+	don.fds = fds;
+	don.nb_process = nb_process;
 	if (!ft_strncmp("here_doc", argv[1], 8))
-		donnee.here_doc = 1;
+		don.here_doc = 1;
 	else
-		donnee.here_doc = 0;
-	donnee.argv = argv;
-	donnee.env = env;
-	return (donnee);
+		don.here_doc = 0;
+	don.argv = argv;
+	don.env = env;
+	return (don);
 }

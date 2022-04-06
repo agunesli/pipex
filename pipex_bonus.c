@@ -26,6 +26,7 @@ void	start_for_open(char **argv)
 		fd = open_file(argv[1], 1);
 	if (dup2(fd, STDIN_FILENO) == -1)
 		merror("Error with dup2\n");
+	close(fd);
 }
 
 void	ft_dup2(int **fds, int i, int nb_process, char **argv)
@@ -38,6 +39,7 @@ void	ft_dup2(int **fds, int i, int nb_process, char **argv)
 	{
 		if (dup2(fds[i][0], STDIN_FILENO) == -1)
 			merror("Error with dup2\n");
+		close(fds[i][0]);
 	}
 	if (i == nb_process - 1)
 	{
@@ -47,11 +49,13 @@ void	ft_dup2(int **fds, int i, int nb_process, char **argv)
 			fd = open_file(argv[nb_process + 2], 2);
 		if (dup2(fd, STDOUT_FILENO) == -1)
 			merror("Error with dup2\n");
+		close(fd);
 	}
 	else
 	{
 		if (dup2(fds[i + 1][1], STDOUT_FILENO) == -1)
 			merror("Error with dup2\n");
+		close(fds[i + 1][1]);
 	}
 }
 
